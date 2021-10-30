@@ -4,13 +4,23 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-  entry: './src/index.js',
+  entry: {
+   'hello': './src/hello.js',
+   'kiwi': './src/kiwi.js'
+  },
   output: {
-    filename: 'bundle.[contenthash].js',
+    filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, './dist'),
     publicPath: '',
   },
   mode: 'production',
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      minSize: 10000,
+      automaticNameDelimiter: '_'
+    }
+  },
   module: {
     rules: [
       {
@@ -45,12 +55,20 @@ module.exports = {
   plugins: [
     //for separate bundle css
     new MiniCssExtractorPlugin({
-      filename: 'styles.[contenthash].css',
+      filename: '[name].[contenthash].css',
     }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
+      filename: 'hello.html',
+      chunks: ['hello', 'vendors~hello-world-kiwi'],
       title: 'learn Webpack 5',
-      template: 'src/index.hbs',
+      template: 'src/page-template.hbs',
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'kiwi.html',
+      chunks: ['kiwi', 'vendors~hello-world-kiwi'],
+      title: 'learn Webpack 5',
+      template: 'src/page-template.hbs',
     }),
   ],
 }
